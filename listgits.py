@@ -32,19 +32,23 @@ def listgits(cwd,level,s,local,remotes):
             listgits(root,level,s,local,remotes)
         os.chdir(root)
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--s",action="store_true",help="Output results in short form, ignoring non-git folders")
-parser.add_argument("--l",action="store_true",help="Show only local repos")
-parser.add_argument("--r",action="store_true",help="Show only repos with remotes")
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--s",action="store_true",help="Output results in short form, ignoring non-git folders")
+    parser.add_argument("--l",action="store_true",help="Show only local repos")
+    parser.add_argument("--r",action="store_true",help="Show only repos with remotes")
 
-args = parser.parse_args()
+    args = parser.parse_args()
 
-short = args.s
-local = args.l
-remotes = args.r
-if not short and (local or remotes):
-    short=True
+    short = args.s
+    local = args.l
+    remotes = args.r
+    if not short and (local or remotes):
+        short=True
 
 
-listgits('./',0,short,local,remotes)
+    listgits('./',0,short,local,remotes)
+
+if __name__ == "__main__":
+      main()
 
