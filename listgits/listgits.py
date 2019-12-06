@@ -44,7 +44,7 @@ def listgits(cwd,level,short,local,remotes,isSearch,gitoptions,results):
                     results.append((fulldir,stdout))
         else:
             if not short and not isSearch:
-                print('Folder only: '+ spc+root)
+                print('Folder only: '+ spc+root+'/'+dir)
             listgits(root,level,short,local,remotes,isSearch,gitoptions,results)
         os.chdir(root)
          
