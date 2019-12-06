@@ -13,8 +13,11 @@ def listgits(cwd,level,short,local,remotes,isSearch,gitoptions,results):
     if len(dirs)==0:
         return
     root = os.getcwd()
+    i=0
     for dir in dirs:
         os.chdir(dir)
+        # print (str(i))
+        # i += 1
         if os.path.isdir('./.git'):
             isOptions = len(gitoptions)>0
             git = ['git']
@@ -28,6 +31,9 @@ def listgits(cwd,level,short,local,remotes,isSearch,gitoptions,results):
             if len(stdout[0])==0:
                 if not remotes and not isSearch:
                     print (spc+'Folder '+root+'/'+dir+'  has local repo only')
+                    print (' ')
+                os.chdir(root)
+                continue
             if local and len(stderr)>0 and not short:
                 for line in stderr:
                     if len(line)>0:
@@ -38,13 +44,17 @@ def listgits(cwd,level,short,local,remotes,isSearch,gitoptions,results):
                     if not isSearch: 
                         print (spc+'Folder '+fulldir+'  ') 
                         for line in stdout:
-                            print (spc+line)
+                            if len(line)>0:
+                                print (spc+line)
                         if isOptions:
                             print('----------')
+                        else:
+                            print ('  ')
                     results.append((fulldir,stdout))
         else:
             if not short and not isSearch:
                 print('Folder only: '+ spc+root+'/'+dir)
+                print (' ')
             listgits(root,level,short,local,remotes,isSearch,gitoptions,results)
         os.chdir(root)
          
@@ -83,7 +93,8 @@ def main():
         for match in matches:
             print ('Folder: '+match[0])
             for remote in match[1]:
-                print ('Remote : '+remote)
+                if len(remote)>0:
+                    print ('Remote : '+remote)
             print ('   ')
 
 
