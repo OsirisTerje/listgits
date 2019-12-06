@@ -5,14 +5,15 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="listgits", 
-    version="0.5.3",
+    version="0.5.5",
     author="Terje Sandstrom",
     author_email="terje@hermit.no",
     description="Python command line program for listing git repositories under a folder root",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/OsirisTerje/listgits",
-    packages=setuptools.find_packages(include=['listgits']),
+    packages=['listgits'],
+    entry_points={'console_scripts': ['listgits = listgits.listgits:main']},
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
