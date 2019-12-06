@@ -6,7 +6,7 @@ import argparse
 def spaces(n):
     return ' '*(n-1)*3
 
-def listgits(cwd,level,s,local,remotes,isSearch,results):
+def listgits(cwd,level,s,local,remotes,isSearch,gitoptions,results):
     level += 1
     spc = spaces(level)
     dirs = list(filter(lambda d:os.path.isdir(d) and not os.path.isdir('./.git'),os.listdir()))
@@ -16,28 +16,36 @@ def listgits(cwd,level,s,local,remotes,isSearch,results):
     for dir in dirs:
         os.chdir(dir)
         if os.path.isdir('./.git'):
-            proc = subprocess.Popen(['git','remote','-v'],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+            isOptions = len(gitoptions)>0
+            git = ['git']
+            if isOptions:
+                git.append(gitoptions)
+            else:
+                git.append(['remote','-v'])    
+            proc = subprocess.Popen(git,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
             stdout = proc.communicate()[0].decode("utf-8").split('\n')
             stderr = proc.communicate()[1].decode("utf-8").split('\n')
             if len(stdout[0])==0:
                 if not remotes and not isSearch:
                     print (spc+'Folder '+root+'/'+dir+'  has local repo only')
-            if local and len(stderr)>0:
+            if local and len(stderr)>0 and not s:
                 for line in stderr:
                     if len(line)>0:
                         print (line)      
             else:
-                if not local:  
+                if not local or isOptions:  
                     fulldir = root +"/"+dir 
                     if not isSearch: 
                         print (spc+'Folder '+fulldir+'  ') 
                         for line in stdout:
                             print (spc+line)
+                        if isOptions:
+                            print('----------')
                     results.append((fulldir,stdout))
         else:
             if not s and not isSearch:
                 print('Folder only: '+ spc+root)
-            listgits(root,level,s,local,remotes,isSearch,results)
+            listgits(root,level,s,local,remotes,isSearch,gitoptions,results)
         os.chdir(root)
          
 
@@ -47,6 +55,7 @@ def main():
     parser.add_argument("--l",action="store_true",help="Show only local repos")
     parser.add_argument("--r",action="store_true",help="Show only repos with remotes")
     parser.add_argument("--f",default="",help="Find a local repo by adding a part of the remote url. All matching local repos will be displayed")
+    parser.add_argument("--g",default="",help="Git options, passes the string of options in to git, and runs git with those instead of the default remote command")
 
     args = parser.parse_args()
 
@@ -61,8 +70,11 @@ def main():
         short=True
         remotes=True
     results = []
-
-    listgits('./',0,short,local,remotes,isSearch,results)
+    gitOptions= [] 
+    if len(args.g)>0:
+        gitOptions=args.g.split(' ')
+        short=True
+    listgits('./',0,short,local,remotes,isSearch,gitOptions,results)
     if isSearch:
         matches = [(x,y) for x,y in results if [s for s in y if search in s.lower() ]]
         for match in matches:
