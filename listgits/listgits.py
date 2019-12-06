@@ -6,7 +6,7 @@ import argparse
 def spaces(n):
     return ' '*(n-1)*3
 
-def listgits(cwd,level,s,local,remotes,isSearch,gitoptions,results):
+def listgits(cwd,level,short,local,remotes,isSearch,gitoptions,results):
     level += 1
     spc = spaces(level)
     dirs = list(filter(lambda d:os.path.isdir(d) and not os.path.isdir('./.git'),os.listdir()))
@@ -19,16 +19,16 @@ def listgits(cwd,level,s,local,remotes,isSearch,gitoptions,results):
             isOptions = len(gitoptions)>0
             git = ['git']
             if isOptions:
-                git.append(gitoptions)
+                git = git+ gitoptions
             else:
-                git.append(['remote','-v'])    
+                git = git + ['remote','-v']   
             proc = subprocess.Popen(git,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
             stdout = proc.communicate()[0].decode("utf-8").split('\n')
             stderr = proc.communicate()[1].decode("utf-8").split('\n')
             if len(stdout[0])==0:
                 if not remotes and not isSearch:
                     print (spc+'Folder '+root+'/'+dir+'  has local repo only')
-            if local and len(stderr)>0 and not s:
+            if local and len(stderr)>0 and not short:
                 for line in stderr:
                     if len(line)>0:
                         print (line)      
@@ -43,9 +43,9 @@ def listgits(cwd,level,s,local,remotes,isSearch,gitoptions,results):
                             print('----------')
                     results.append((fulldir,stdout))
         else:
-            if not s and not isSearch:
+            if not short and not isSearch:
                 print('Folder only: '+ spc+root)
-            listgits(root,level,s,local,remotes,isSearch,gitoptions,results)
+            listgits(root,level,short,local,remotes,isSearch,gitoptions,results)
         os.chdir(root)
          
 
@@ -74,6 +74,9 @@ def main():
     if len(args.g)>0:
         gitOptions=args.g.split(' ')
         short=True
+
+
+    # print('Short form: %s  Local: %s Remote: %s Find: %s  GitOptions: %s' % (short,local,remotes,search,gitOptions))    
     listgits('./',0,short,local,remotes,isSearch,gitOptions,results)
     if isSearch:
         matches = [(x,y) for x,y in results if [s for s in y if search in s.lower() ]]
