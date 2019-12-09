@@ -9,7 +9,7 @@ def spaces(n):
 def listgits(cwd,level,short,local,remotes,isSearch,gitoptions,results):
     level += 1
     spc = spaces(level)
-    dirs = list(filter(lambda d:os.path.isdir(d) and not os.path.isdir('./.git'),os.listdir()))
+    dirs = list(filter(lambda d:os.path.isdir(d) ,os.listdir())) 
     if len(dirs)==0:
         return
     root = os.getcwd()

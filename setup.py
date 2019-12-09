@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="listgits", 
-    version="1.0.0",
+    version="1.0.1",
     author="Terje Sandstrom",
     author_email="terje@hermit.no",
     description="Python command line program for listing git repositories under a folder root, and optionally run any git command on those repos",
