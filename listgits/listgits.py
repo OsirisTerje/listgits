@@ -26,8 +26,11 @@ def listgits(cwd,level,short,local,remotes,isSearch,gitoptions,results):
             else:
                 git = git + ['remote','-v']   
             proc = subprocess.Popen(git,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-            stdout = proc.communicate()[0].decode("utf-8").split('\n')
-            stderr = proc.communicate()[1].decode("utf-8").split('\n')
+            stdout_value, stderr_value = proc.communicate()
+            stdout = stdout_value.decode("utf-8").split('\n')
+            stderr = []
+            if stderr_value is not None:
+                stderr = stderr_value.decode("utf-8").split('\n')
             if len(stdout[0])==0:
                 if not remotes and not isSearch:
                     print (spc+'Folder '+root+'/'+dir+'  has local repo only')
